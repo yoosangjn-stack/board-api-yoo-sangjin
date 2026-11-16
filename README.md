@@ -103,20 +103,35 @@ uv run ruff check src tests scripts
 ```
 
 테스트는 **localhost의 `board_test` 전용 DB만 허용**하며, 테스트별 변경을 롤백합니다. 다른 업무 데이터가 없는 계정·DB를 사용하세요.
-현재 검증 범위와 미완료 항목은 [검증 기록](docs/VERIFICATION.md)을 확인합니다. 과거 쇼핑몰의 테스트 통과 수는 이 분리본의 결과가 아닙니다.
+[기존 검증 기록](docs/VERIFICATION.md)은 배포 전 기록입니다. 아래 2026-11-16 결과가 최신입니다. 과거 쇼핑몰의 테스트 통과 수는 이 분리본의 결과가 아닙니다.
 
-## 7. 제출 상태
+## 7. 배포 및 최신 검증 (2026-11-16 KST)
 
-- [x] 쇼핑몰 기능을 제외한 별도 게시판 코드
-- [x] 4계층·JWT·SQLAlchemy·Swagger 구성
-- [x] 정적 검사 및 DB 없는 검증
-- [ ] PostgreSQL 통합 테스트와 실제 CRUD 재검증
-- [ ] 실제 시연 캡처 첨부
-- [ ] 개인 공개 GitHub URL 확인
-- [ ] AWS EC2 배포 URL/IP와 외부 Swagger 접속 확인
-- [ ] LMS GitHub URL + 배포 URL 제출
+- 공개 저장소: https://github.com/yoosangjn-stack/board-api-yoo-sangjin
+- **AWS EC2 Swagger:** http://15.164.231.147/docs
+- API 명세: http://15.164.231.147/openapi.json
+- 상태 확인: http://15.164.231.147/health
+- 서울 리전 Ubuntu / t3.micro / Nginx → FastAPI / PostgreSQL 구성입니다.
+- DB 5432와 앱 8000은 localhost에만 바인딩합니다. 공개 웹은 80, SSH 22는 관리용 IP 한 곳만 허용합니다.
+- 무료 플랜 크레딧으로 실행하며 유료 플랜으로 전환하지 않았습니다. 영구 무료 서비스는 아닙니다. 인스턴스 중지·재시작 시 공인 IP가 달라질 수 있습니다.
+- HTTP 학습용 서비스이므로 실제 개인정보나 다른 서비스에서 사용하는 비밀번호를 입력하지 마세요.
 
-**EC2 배포 주소는 아직 없습니다. localhost는 제출용 배포 주소가 아닙니다.**
+### 오늘 실제 확인한 결과
+
+- 이 저장소의 PostgreSQL 전용 테스트 DB에서 전체 pytest **58개 통과**, Ruff 통과. 과거 쇼핑몰 결과가 아닙니다.
+- 테스트의 CORS 검증은 localhost Origin을 사용합니다. 운영 환경의 공개 IP Origin과 구분하여 테스트 프로세스에서 설정합니다.
+- 노트북에서 외부 HTTP 요청으로 /health, /docs, /openapi.json 각각 200 확인.
+- 가짜 테스트 계정으로 회원가입(201), JWT 로그인, 게시글 생성·조회·수정·삭제(204), 로그아웃(204)을 실제 외부 API로 확인했습니다. 테스트 게시글은 삭제했습니다.
+- 서비스 재시작 후 응답 확인. 초기 테이블/데모 생성 옵션은 false로 돌려놓았습니다.
+- .env.example, .gitignore, .python-version 보완 완료. 실제 .env 및 SSH 개인키는 저장소에 없습니다.
+
+### 남은 확인
+
+- [x] 실제 Chrome에서 Swagger UI 정상 표시 확인
+- [ ] 과제 제출용 화면 캡처 파일 첨부
+- [ ] 사용자의 LMS 최종 제출 확인
+
+초기 브라우저 타임아웃은 https:// 주소로 접속한 것이 원인이었습니다. http://15.164.231.147/docs 로 변경하여 실제 Chrome에서 Swagger UI 정상 표시를 확인했습니다. HTTPS는 구성하지 않았으므로 반드시 HTTP 주소를 사용하세요. 화면 표시 확인과 전체 브라우저 CRUD 시연·캡처 첨부는 구분합니다.
 
 ## 8. 기반 코드
 
