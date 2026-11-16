@@ -1,0 +1,2083 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Board API",
+    "description": "교안 기반 4계층 게시판 API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/users": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "회원가입",
+        "description": "새로운 사용자를 등록합니다.",
+        "operationId": "sign_up_v1_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_UserResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/{user_id}/password": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "비밀번호 변경",
+        "description": "비밀번호 변경 엔드포인트",
+        "operationId": "change_password_v1_users__user_id__password_patch",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_NoneType_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "로그인",
+        "description": "이메일과 비밀번호를 검증하여 JWT 액세스 토큰(HS512)을 발급합니다.",
+        "operationId": "login_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "로그아웃",
+        "description": "현재 전달된 JWT 액세스 토큰의 식별자(jti)를 블랙리스트 DB에 등록하여 세션을 무효화합니다.",
+        "operationId": "logout_v1_auth_logout_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/auth/token": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "OAuth2 토큰 발급",
+        "description": "Swagger 로그인: username 칸에 이메일을 입력하세요.",
+        "operationId": "issue_token_v1_auth_token_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_issue_token_v1_auth_token_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/boards": {
+      "post": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "게시판 생성",
+        "operationId": "create_board_v1_boards_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBoardRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "게시판 전체 목록 조회",
+        "operationId": "list_boards_v1_boards_get",
+        "parameters": [
+          {
+            "name": "include_deleted",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "삭제된 게시판 포함 여부",
+              "default": false,
+              "title": "Include Deleted"
+            },
+            "description": "삭제된 게시판 포함 여부"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BoardResponse"
+                  },
+                  "title": "Response List Boards V1 Boards Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/boards/{board_id}": {
+      "get": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "게시판 단건 상세 조회",
+        "operationId": "get_board_v1_boards__board_id__get",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "게시판 설정 수정 (관리자 전용)",
+        "operationId": "update_board_config_v1_boards__board_id__put",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBoardRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "게시판 삭제 (관리자 전용)",
+        "operationId": "delete_board_v1_boards__board_id__delete",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/boards/{board_id}/posts": {
+      "post": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "게시글 작성",
+        "operationId": "write_post_v1_boards__board_id__posts_post",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePostRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "게시글 목록 페이징 및 검색",
+        "operationId": "list_posts_v1_boards__board_id__posts_get",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000000,
+              "minimum": 1,
+              "description": "페이지 번호 (기본값: 1)",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "페이지 번호 (기본값: 1)"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 100,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "페이지 크기 (미지정 시 게시판 설정 기본값 사용)",
+              "title": "Page Size"
+            },
+            "description": "페이지 크기 (미지정 시 게시판 설정 기본값 사용)"
+          },
+          {
+            "name": "search_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/PostSearchType",
+              "description": "검색 대상 (ALL, TITLE, CONTENT, TITLE_CONTENT, AUTHOR_NAME)",
+              "default": "ALL"
+            },
+            "description": "검색 대상 (ALL, TITLE, CONTENT, TITLE_CONTENT, AUTHOR_NAME)"
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 50
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "검색 키워드",
+              "title": "Keyword"
+            },
+            "description": "검색 키워드"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostPaginationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/posts/{post_id}": {
+      "get": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "게시글 상세 조회",
+        "operationId": "get_post_detail_v1_posts__post_id__get",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "title": "Post Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "게시글 수정",
+        "operationId": "update_post_v1_posts__post_id__put",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "title": "Post Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePostRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "게시글 삭제",
+        "operationId": "delete_post_v1_posts__post_id__delete",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "title": "Post Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/DeletePostRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Req"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/posts/{post_id}/comments": {
+      "post": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "댓글 작성",
+        "operationId": "write_comment_v1_posts__post_id__comments_post",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "title": "Post Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "게시글의 댓글 목록 조회",
+        "operationId": "list_comments_v1_posts__post_id__comments_get",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "title": "Post Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentResponse"
+                  },
+                  "title": "Response List Comments V1 Posts  Post Id  Comments Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/comments/{comment_id}": {
+      "put": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "댓글 수정",
+        "operationId": "update_comment_v1_comments__comment_id__put",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "title": "Comment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCommentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Boards"
+        ],
+        "summary": "댓글 삭제",
+        "operationId": "delete_comment_v1_comments__comment_id__delete",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "title": "Comment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/DeleteCommentRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Req"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "APIResponse_NoneType_": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "description": "처리 성공/실패 여부"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code",
+            "description": "비즈니스 식별 코드 (성공 시 OK, 실패 시 에러 코드)"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "성공 또는 실패시 설명"
+          },
+          "errors": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Errors",
+            "description": "실패 시 세부 오류 내용"
+          },
+          "data": {
+            "type": "null",
+            "title": "Data",
+            "description": "성공시 응답 데이터"
+          },
+          "responded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Responded At",
+            "description": "응답 날짜시간(UTC)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "title": "APIResponse[NoneType]"
+      },
+      "APIResponse_UserResponse_": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "description": "처리 성공/실패 여부"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code",
+            "description": "비즈니스 식별 코드 (성공 시 OK, 실패 시 에러 코드)"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "성공 또는 실패시 설명"
+          },
+          "errors": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Errors",
+            "description": "실패 시 세부 오류 내용"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserResponse"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "성공시 응답 데이터"
+          },
+          "responded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Responded At",
+            "description": "응답 날짜시간(UTC)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "title": "APIResponse[UserResponse]"
+      },
+      "AuthorResponse": {
+        "properties": {
+          "author_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author Id",
+            "description": "회원 ID (비회원은 None)"
+          },
+          "author_name": {
+            "type": "string",
+            "title": "Author Name",
+            "description": "작성자 표시 이름"
+          },
+          "is_guest": {
+            "type": "boolean",
+            "title": "Is Guest",
+            "description": "비회원 작성글 여부"
+          }
+        },
+        "type": "object",
+        "required": [
+          "author_name",
+          "is_guest"
+        ],
+        "title": "AuthorResponse",
+        "description": "작성자 정보 응답"
+      },
+      "AuthoritySchema": {
+        "properties": {
+          "edit_role": {
+            "$ref": "#/components/schemas/Role",
+            "description": "게시글 작성/수정/삭제 권한",
+            "default": "ALL"
+          },
+          "view_role": {
+            "$ref": "#/components/schemas/Role",
+            "description": "게시글 상세 열람 권한",
+            "default": "ALL"
+          },
+          "list_role": {
+            "$ref": "#/components/schemas/Role",
+            "description": "게시글 목록 열람 권한",
+            "default": "ALL"
+          },
+          "comment_list_role": {
+            "$ref": "#/components/schemas/Role",
+            "description": "댓글 목록 열람 권한",
+            "default": "ALL"
+          },
+          "comment_edit_role": {
+            "$ref": "#/components/schemas/Role",
+            "description": "댓글 작성/수정/삭제 권한",
+            "default": "ALL"
+          }
+        },
+        "type": "object",
+        "title": "AuthoritySchema",
+        "description": "게시판 권한 세부 설정 스키마"
+      },
+      "BoardResponse": {
+        "properties": {
+          "board_id": {
+            "type": "string",
+            "title": "Board Id",
+            "description": "게시판 고유 식별자"
+          },
+          "board_name": {
+            "type": "string",
+            "title": "Board Name",
+            "description": "게시판 표시 이름"
+          },
+          "authority": {
+            "$ref": "#/components/schemas/AuthoritySchema",
+            "description": "게시판 권한 설정"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size",
+            "description": "페이지당 노출 게시글 수"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At",
+            "description": "생성일시"
+          },
+          "modified_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modified At",
+            "description": "수정일시"
+          }
+        },
+        "type": "object",
+        "required": [
+          "board_id",
+          "board_name",
+          "authority",
+          "page_size"
+        ],
+        "title": "BoardResponse",
+        "description": "게시판 설정 정보 응답"
+      },
+      "Body_issue_token_v1_auth_token_post": {
+        "properties": {
+          "grant_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^password$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grant Type"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "title": "Password"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope",
+            "default": ""
+          },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          },
+          "client_secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "format": "password",
+            "title": "Client Secret"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "Body_issue_token_v1_auth_token_post"
+      },
+      "ChangePasswordRequest": {
+        "properties": {
+          "old_password": {
+            "type": "string",
+            "title": "Old Password",
+            "description": "현재 비밀번호"
+          },
+          "new_password": {
+            "type": "string",
+            "minLength": 8,
+            "title": "New Password",
+            "description": "새 비밀번호 (8자 이상, 영문/숫자/특수문자)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "old_password",
+          "new_password"
+        ],
+        "title": "ChangePasswordRequest",
+        "description": "비밀번호 변경 요청 스키마"
+      },
+      "CommentResponse": {
+        "properties": {
+          "comment_id": {
+            "type": "integer",
+            "title": "Comment Id",
+            "description": "댓글 고유 ID"
+          },
+          "post_id": {
+            "type": "integer",
+            "title": "Post Id",
+            "description": "게시글 ID"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "댓글 내용"
+          },
+          "author": {
+            "$ref": "#/components/schemas/AuthorResponse",
+            "description": "작성자 정보"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At",
+            "description": "작성일시"
+          },
+          "modified_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modified At",
+            "description": "수정일시"
+          }
+        },
+        "type": "object",
+        "required": [
+          "comment_id",
+          "post_id",
+          "content",
+          "author"
+        ],
+        "title": "CommentResponse",
+        "description": "댓글 응답"
+      },
+      "CreateBoardRequest": {
+        "properties": {
+          "board_id": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 2,
+            "title": "Board Id",
+            "description": "게시판 고유 식별자 (영문 소문자로 시작, 2~30자)",
+            "examples": [
+              "freetalk",
+              "notice",
+              "qna"
+            ]
+          },
+          "board_name": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Board Name",
+            "description": "게시판 표시 이름"
+          },
+          "authority": {
+            "$ref": "#/components/schemas/AuthoritySchema",
+            "description": "권한 설정"
+          },
+          "page_size": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Page Size",
+            "description": "페이지당 노출할 게시글 수",
+            "default": 20
+          }
+        },
+        "type": "object",
+        "required": [
+          "board_id",
+          "board_name"
+        ],
+        "title": "CreateBoardRequest",
+        "description": "게시판 설정 생성 요청"
+      },
+      "CreateCommentRequest": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Content",
+            "description": "댓글 내용"
+          },
+          "guest_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guest Name",
+            "description": "작성자 이름 또는 비회원 닉네임"
+          },
+          "guest_password": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 6
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guest Password",
+            "description": "비회원 비밀번호 (6자 이상)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "CreateCommentRequest",
+        "description": "댓글 등록 요청"
+      },
+      "CreatePostRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "description": "게시글 제목"
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Content",
+            "description": "게시글 본문"
+          },
+          "guest_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guest Name",
+            "description": "작성자 이름 또는 비회원 닉네임"
+          },
+          "guest_password": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 6
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guest Password",
+            "description": "비회원 비밀번호 (6자 이상)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "content"
+        ],
+        "title": "CreatePostRequest",
+        "description": "게시글 작성 요청 (회원/비회원 공용)"
+      },
+      "DeleteCommentRequest": {
+        "properties": {
+          "guest_password": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guest Password",
+            "description": "비회원 댓글인 경우 비밀번호"
+          }
+        },
+        "type": "object",
+        "title": "DeleteCommentRequest",
+        "description": "댓글 삭제 요청 (비회원용)"
+      },
+      "DeletePostRequest": {
+        "properties": {
+          "guest_password": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guest Password",
+            "description": "비회원 작성글인 경우 비밀번호"
+          }
+        },
+        "type": "object",
+        "title": "DeletePostRequest",
+        "description": "게시글 삭제 요청 (비회원용)"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LoginRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email",
+            "description": "로그인할 사용자의 이메일 주소",
+            "examples": [
+              "user@example.com"
+            ]
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Password",
+            "description": "로그인할 사용자의 비밀번호",
+            "examples": [
+              "P@ssword1234!"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "PostDetailResponse": {
+        "properties": {
+          "post_id": {
+            "type": "integer",
+            "title": "Post Id",
+            "description": "게시글 고유 ID"
+          },
+          "board_id": {
+            "type": "string",
+            "title": "Board Id",
+            "description": "게시판 식별자"
+          },
+          "board_name": {
+            "type": "string",
+            "title": "Board Name",
+            "description": "게시판 이름"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "게시글 제목"
+          },
+          "author": {
+            "$ref": "#/components/schemas/AuthorResponse",
+            "description": "작성자 정보"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At",
+            "description": "작성일시"
+          },
+          "modified_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modified At",
+            "description": "수정일시"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "게시글 본문"
+          }
+        },
+        "type": "object",
+        "required": [
+          "post_id",
+          "board_id",
+          "board_name",
+          "title",
+          "author",
+          "content"
+        ],
+        "title": "PostDetailResponse",
+        "description": "게시글 상세 조회 응답"
+      },
+      "PostListItemResponse": {
+        "properties": {
+          "post_id": {
+            "type": "integer",
+            "title": "Post Id",
+            "description": "게시글 고유 ID"
+          },
+          "board_id": {
+            "type": "string",
+            "title": "Board Id",
+            "description": "게시판 식별자"
+          },
+          "board_name": {
+            "type": "string",
+            "title": "Board Name",
+            "description": "게시판 이름"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "게시글 제목"
+          },
+          "author": {
+            "$ref": "#/components/schemas/AuthorResponse",
+            "description": "작성자 정보"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At",
+            "description": "작성일시"
+          },
+          "modified_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modified At",
+            "description": "수정일시"
+          }
+        },
+        "type": "object",
+        "required": [
+          "post_id",
+          "board_id",
+          "board_name",
+          "title",
+          "author"
+        ],
+        "title": "PostListItemResponse",
+        "description": "게시글 목록 항목 응답"
+      },
+      "PostPaginationResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PostListItemResponse"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "게시글 목록"
+          },
+          "total_count": {
+            "type": "integer",
+            "title": "Total Count",
+            "description": "조건에 맞는 전체 게시글 수"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page",
+            "description": "현재 페이지 번호"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size",
+            "description": "페이지당 노출 개수"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages",
+            "description": "전체 페이지 수"
+          },
+          "search_type": {
+            "$ref": "#/components/schemas/PostSearchType",
+            "description": "적용된 검색 조건"
+          },
+          "keyword": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keyword",
+            "description": "적용된 검색 키워드"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total_count",
+          "page",
+          "page_size",
+          "total_pages",
+          "search_type"
+        ],
+        "title": "PostPaginationResponse",
+        "description": "게시글 목록 페이징 및 검색 결과 응답"
+      },
+      "PostSearchType": {
+        "type": "string",
+        "enum": [
+          "ALL",
+          "TITLE",
+          "CONTENT",
+          "TITLE_CONTENT",
+          "AUTHOR_NAME"
+        ],
+        "title": "PostSearchType"
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "ALL",
+          "USER",
+          "ADMIN"
+        ],
+        "title": "Role"
+      },
+      "SignUpUserRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9_]+$",
+            "title": "Username",
+            "description": "아이디 (영문, 숫자, 밑줄)"
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 29,
+            "minLength": 10,
+            "title": "Phone",
+            "description": "전화번호 (숫자 10~15자리, 하이픈 허용)"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email",
+            "description": "로그인에 사용할 사용자 이메일"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "title": "Name",
+            "description": "사용자 이름 (2~20자)"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "title": "Password",
+            "description": "비밀번호 (8자 이상, 영문/숫자/특수문자 포함)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "phone",
+          "email",
+          "name",
+          "password"
+        ],
+        "title": "SignUpUserRequest",
+        "description": "회원가입 요청 스키마"
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token",
+            "description": "인증 및 인가 요청 시 Authorization 헤더에 Bearer로 전달할 JWT 액세스 토큰 (HS512 서명)",
+            "examples": [
+              "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMmUzNDU2Ny1lODliLTEyZDMtYTR1Ni00MjY2MTQxNzQwMDAiLCJqdGkiOiJmYTQxY2U0MS02ZTc2LTRiOWUtODhjNi0wMzc2OGY5OGJkMTQiLCJleHAiOjE3OTM1MDAwMDAsImlhdCI6MTc5MzQ5NjQwMH0..."
+            ]
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "description": "토큰 인증 스키마 타입",
+            "default": "bearer",
+            "examples": [
+              "bearer"
+            ]
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In",
+            "description": "액세스 토큰의 유효 기간 (초 단위)",
+            "examples": [
+              3600
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "expires_in"
+        ],
+        "title": "TokenResponse"
+      },
+      "UpdateBoardRequest": {
+        "properties": {
+          "board_name": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Board Name",
+            "description": "게시판 표시 이름"
+          },
+          "page_size": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Page Size",
+            "description": "페이지당 노출할 게시글 수"
+          },
+          "authority": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AuthoritySchema"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "변경할 권한 설정 (생략 시 기존 유지)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "board_name",
+          "page_size"
+        ],
+        "title": "UpdateBoardRequest",
+        "description": "게시판 설정 수정 요청"
+      },
+      "UpdateCommentRequest": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Content",
+            "description": "수정할 댓글 내용"
+          },
+          "guest_password": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guest Password",
+            "description": "비회원 댓글인 경우 비밀번호"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "UpdateCommentRequest",
+        "description": "댓글 수정 요청"
+      },
+      "UpdatePostRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "description": "수정할 게시글 제목"
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Content",
+            "description": "수정할 게시글 본문"
+          },
+          "guest_password": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guest Password",
+            "description": "비회원 작성글인 경우 비밀번호"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "content"
+        ],
+        "title": "UpdatePostRequest",
+        "description": "게시글 수정 요청"
+      },
+      "UserResponse": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id",
+            "description": "사용자 식별 고유 ID"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email",
+            "description": "이메일"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "사용자 이름"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "사용자 권한 (USER, ADMIN)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "phone",
+          "email",
+          "name",
+          "role"
+        ],
+        "title": "UserResponse",
+        "description": "사용자 정보 응답 스키마"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/v1/auth/token"
+          }
+        }
+      }
+    }
+  }
+}
